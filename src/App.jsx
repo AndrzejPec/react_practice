@@ -1,16 +1,26 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 import React from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import categoriesFromServer from './api/categories';
-// import productsFromServer from './api/products';
+import usersFromServer from './api/users';
+import categoriesFromServer from './api/categories';
+import productsFromServer from './api/products';
 
-// const products = productsFromServer.map((product) => {
-//   const category = null; // find by product.categoryId
-//   const user = null; // find by category.ownerId
+// eslint-disable-next-line no-unused-vars
+const products = productsFromServer.map((product) => {
+  const category = categoriesFromServer
+    .find(categoryToFind => categoryToFind.id === product.categoryId);
+  const user = usersFromServer
+    .find(userToFind => userToFind.id === category.ownerId);
 
-//   return null;
-// });
+  return {
+    id: product.id,
+    name: product.name,
+    category: `${category.icon} - ${category.title}`,
+    user: user.name,
+    userGender: user.sex,
+  };
+});
 
 export const App = () => (
   <div className="section">
