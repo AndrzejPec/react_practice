@@ -202,7 +202,25 @@ export const App = () => (
           </thead>
 
           <tbody>
-            <tr data-cy="Product">
+            {products.map(product => (
+              <tr key={product.id} data-cy="Product">
+                <td className="has-text-weight-bold" data-cy="ProductId">
+                  {product.id}
+                </td>
+                <td data-cy="ProductName">{product.name}</td>
+                <td data-cy="ProductCategory">{product.category}</td>
+                <td
+                  data-cy="ProductUser"
+                  className={product.userGender === 'm'
+                    ? 'has-text-link'
+                    : 'has-text-danger'}
+                >
+                  {product.user}
+                </td>
+              </tr>
+            ))}
+
+            {/* <tr data-cy="Product">
               <td className="has-text-weight-bold" data-cy="ProductId">
                 1
               </td>
@@ -248,7 +266,7 @@ export const App = () => (
               >
                 Roma
               </td>
-            </tr>
+            </tr> */}
           </tbody>
         </table>
       </div>
