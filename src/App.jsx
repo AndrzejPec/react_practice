@@ -12,6 +12,10 @@ export const App = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategories, setSelectedCategories] = useState(new Set());
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'none',
+  });
 
   const products = productsFromServer.map((product) => {
     const category = categoriesFromServer
@@ -39,6 +43,41 @@ export const App = () => {
     && (selectedCategories.size === 0
       || selectedCategories.has(product.category.split(' - ')[1]))
   ));
+
+  const sortedProducts = React.useMemo(() => {
+    const sortableProducts = [...filteredProducts];
+
+    if (sortConfig.key && sortConfig.direction !== 'none') {
+      sortableProducts.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+
+        return 0;
+      });
+    }
+
+    return sortableProducts;
+  }, [filteredProducts, sortConfig]);
+
+  const handleSortClick = (key) => {
+    let direction = 'ascending';
+
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    } else if (sortConfig.key === key
+      && sortConfig.direction === 'descending') {
+      direction = 'none';
+    } else {
+      direction = 'ascending';
+    }
+
+    setSortConfig({ key, direction });
+  };
 
   const handleCategoryClick = (category) => {
     const newCategories = new Set(selectedCategories);
@@ -173,58 +212,52 @@ export const App = () => {
             >
               <thead>
                 <tr>
-                  <th>
+                  <th onClick={() => handleSortClick('id')}>
                     <span className="is-flex is-flex-wrap-nowrap">
                       ID
-
                       <a href="#/">
                         <span className="icon">
-                          <i data-cy="SortIcon" className="fas fa-sort" />
+                          <i data-cy="SortIcon" className={`fas fa-sort${sortConfig.key === 'id' ? `-${sortConfig.direction !== 'none' ? sortConfig.direction : ''}` : ''}`} />
                         </span>
                       </a>
                     </span>
                   </th>
-
-                  <th>
+                  <th onClick={() => handleSortClick('name')}>
                     <span className="is-flex is-flex-wrap-nowrap">
                       Product
-
                       <a href="#/">
                         <span className="icon">
-                          <i data-cy="SortIcon" className="fas fa-sort-down" />
+                          <i data-cy="SortIcon" className={`fas fa-sort${sortConfig.key === 'id' ? `-${sortConfig.direction !== 'none' ? sortConfig.direction : ''}` : ''}`} />
                         </span>
                       </a>
                     </span>
                   </th>
-
-                  <th>
+                  <th onClick={() => handleSortClick('category')}>
                     <span className="is-flex is-flex-wrap-nowrap">
                       Category
-
                       <a href="#/">
                         <span className="icon">
-                          <i data-cy="SortIcon" className="fas fa-sort-up" />
+                          <i data-cy="SortIcon" className={`fas fa-sort${sortConfig.key === 'id' ? `-${sortConfig.direction !== 'none' ? sortConfig.direction : ''}` : ''}`} />
                         </span>
                       </a>
                     </span>
                   </th>
-
-                  <th>
+                  <th onClick={() => handleSortClick('user')}>
                     <span className="is-flex is-flex-wrap-nowrap">
                       User
-
                       <a href="#/">
                         <span className="icon">
-                          <i data-cy="SortIcon" className="fas fa-sort" />
+                          <i data-cy="SortIcon" className={`fas fa-sort${sortConfig.key === 'id' ? `-${sortConfig.direction !== 'none' ? sortConfig.direction : ''}` : ''}`} />
                         </span>
                       </a>
                     </span>
                   </th>
+
                 </tr>
               </thead>
 
               <tbody>
-                {filteredProducts.map(product => (
+                {sortedProducts.map(product => (
                   <tr key={product.id} data-cy="Product">
                     <td className="has-text-weight-bold" data-cy="ProductId">
                       {product.id}
